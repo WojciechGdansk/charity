@@ -20,8 +20,8 @@ from giving import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.LandingPare.as_view()),
-    path('donate/', views.AddDonation.as_view()),
-    path('login/', views.Login.as_view()),
-    path('register/', views.Register.as_view()),
+    path('', views.LandingPage.as_view(), name='main'),
+    path('donate/', views.AddDonation.as_view(), name="donate"),
+    path('login/', views.Login.as_view(), name='login'),
+    path('register/', views.Register.as_view(), name='register'),
 ]
