@@ -6,15 +6,15 @@ from django.db.models import Sum
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
-
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 class LandingPage(View):
     def get(self, request):
         supported_institution = set()
-        all_insitutions = Insitution.objects.all()
-        for institution in all_insitutions:
-            supported_institution.add(institution.name)
+        all_donations = Donation.objects.all()
+        for institution in all_donations:
+            supported_institution.add(institution.institution.name)
         foundations = Insitution.objects.filter(type=1).order_by('id')
         paginator_foundations = Paginator(foundations, 5)
         page = request.GET.get('page')
@@ -43,6 +43,15 @@ class Login(View):
     def get(self, request):
         return render(request, 'login.html')
 
+    def post(self, request):
+        username = request.POST.get('email')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect(reverse('main'))
+        else:
+            return redirect(reverse('register'))
 
 class Register(View):
     def get(self, request):
@@ -76,3 +85,8 @@ class Register(View):
             password=password
         )
         return redirect(reverse("login"))
+
+class Logout(View):
+    def get(self, request):
+        logout(request)
+        return redirect(reverse('main'))
