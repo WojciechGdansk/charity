@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    {{ user.first_name }} {{ user.last_name }} oddał
+{% endblock %}
+{% block body %}
+    <header>
+      <nav class="container container--70">
+        {% include 'login_header.html' %}
+        {% include 'headermenu.html' %}
+      </nav>
+    </header>
+
+    <section class="login-page">
+      <h2>Oddane:</h2>
+        {% for donate in donations %}
+            <div class="donated-text">
+                <ul>
+                    <li><h3>Instytucji: {{ donate.institution }}</h3></li>
+                    <li>Worków: {{ donate.quantity }}</li>
+                    <li>Kategorie: {% for cat in donate.categories.all %}{{ cat.name }}, {% endfor %}</li>
+                    <li>Zabrane: {{ donate.pick_up_date }} - {{ donate.pick_up_time }}</li>
+                    <li>Odebrane:
+                        {% if donate.is_taken %}
+                            <span>TAK</span>
+                            <input type="checkbox" name="taken" value="{{ donate.id }}"checked><span>Oznacz jako nieodebrany</span>
+                        {% else %}
+                            <span>NIE</span>
+                            <input type="checkbox" name="taken" value="{{ donate.id }}"><span>Oznacz jako odebrany</span>
+                        {% endif %}
+
+                    </li>
+                </ul>
+            </div>
+        {% endfor %}
+    </section>
+{% endblock %}

@@ -5,7 +5,7 @@
         Witaj {{ user.first_name }}
         <ul class="dropdown">
           <li><a href="{% url 'user-profile' %}">Profil</a></li>
-          <li><a href="#">Moje zbiórki</a></li>
+          <li><a href="{% url 'donated-items' %}">Moje zbiórki</a></li>
             {% if user.is_superuser %}
           <li><a href="{% url 'admin:index' %}">Panel administracyjny</a></li>
             {% endif %}

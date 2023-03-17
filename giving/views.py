@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+
 
 # Create your views here.
 class LandingPage(View):
@@ -71,6 +73,7 @@ class AddDonation(LoginRequiredMixin, View):
 
         return redirect(reverse('donate-complate'))
 
+
 class Login(View):
     def get(self, request):
         return render(request, 'login.html')
@@ -84,6 +87,7 @@ class Login(View):
             return redirect(reverse('main'))
         else:
             return redirect(reverse('register'))
+
 
 class Register(View):
     def get(self, request):
@@ -118,6 +122,7 @@ class Register(View):
         )
         return redirect(reverse("login"))
 
+
 class Logout(View):
     def get(self, request):
         logout(request)
@@ -132,3 +137,27 @@ class DonateConfirmation(View):
 class Profile(View):
     def get(self, request):
         return render(request, 'user_profile.html')
+
+
+class DonatedItems(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        donations = Donation.objects.filter(user=user).order_by("is_taken", "pick_up_date", "pick_up_date")
+        return render(request, 'user_donated.html', {"donations": donations})
+
+
+class CollectedChangeView(LoginRequiredMixin, View):
+    def get(self, request, id):
+        try:
+            donation = Donation.objects.get(id=id)
+        except ObjectDoesNotExist:
+            return JsonResponse({"status": "false"}, status=500)
+        user = request.user
+        if donation.user != user:
+            return JsonResponse({"status": "false"}, status=500)
+        if donation.is_taken == False:
+            donation.is_taken = True
+        elif donation.is_taken == True:
+            donation.is_taken = False
+        donation.save()
+        return JsonResponse({"status": "true"}, status=200)

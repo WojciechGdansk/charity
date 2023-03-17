@@ -27,4 +27,6 @@ urlpatterns = [
     path('logout/', views.Logout.as_view(), name='logout'),
     path('donated/', views.DonateConfirmation.as_view(), name='donate-complate'),
     path('user_profile/', views.Profile.as_view(), name='user-profile'),
+    path('donated_by_user/', views.DonatedItems.as_view(), name='donated-items'),
+    path('change_if_collected/<int:id>', views.CollectedChangeView.as_view(), name='collected-change'),
 ]

@@ -299,6 +299,28 @@ document.addEventListener("DOMContentLoaded", function () {
         new FormSteps(form);
     }
 
+const donateCheckboxes = document.querySelectorAll('input[name="taken"]')
+donateCheckboxes.forEach((el)=>{
+    if (el.checked==true) {
+        el.parentElement.parentElement.parentElement.classList = "donated-text-collected"
+    }
+    el.addEventListener('click', ()=>{
+        if (el.checked==true) {
+            el.nextElementSibling.innerText = "Oznacz jako nieodebrany"
+            el.previousElementSibling.innerText = "TAK"
+            changeCollectedInfo(el.value)
+            el.parentElement.parentElement.parentElement.classList = "donated-text-collected"
+
+        }
+        else if (el.checked == false) {
+            el.nextElementSibling.innerText = "Oznacz jako odebrany"
+            el.previousElementSibling.innerText = "NIE"
+            changeCollectedInfo(el.value)
+            el.parentElement.parentElement.parentElement.classList = "donated-text"
+        }
+
+    })
+})
 
 });
 
@@ -444,4 +466,17 @@ function validateAddressFields() {
             return false
         }
     }
+}
+
+
+
+
+function changeCollectedInfo(donationId) {
+    const response = fetch(`/change_if_collected/${donationId}`)
+        .then((res)=>{
+            if (!res.ok) {
+                alert("Błąd")
+                location.reload()
+            }
+        })
 }
