@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load mathfilters %}
 {% block title %}Document{% endblock %}
 {% block body %}
 
@@ -102,30 +103,18 @@
             {% endfor %}
 
         </ul>
-      <div class="pagination">
-        <span class="step-links">
-            {% if foundations.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ foundations.previous_page_number }}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ foundations.number }} of {{ foundations.paginator.num_pages }}.
-            </span>
-
-            {% if foundations.has_next %}
-                <a href="?page={{ foundations.next_page_number }}">next</a>
-                <a href="?page={{ foundations.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-        </span>
-      </div>
-        <!-- Pagination
         <ul class="help--slides-pagination">
-          <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="2">2</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="3">3</a></li>
+            {% for foundation in foundations %}
+                {% with howmany=forloop.counter|sub:1 %}
+                {% if howmany|divisibleby:5 %}
+                    {% with number=forloop.counter|intdiv:5 %}
+                        <li><a href="#" class="btn btn--small btn--without-border active" data-page="{{ number|add:1 }}">{{ number|add:1 }}</a></li>
+                    {% endwith %}
+                {% endif %}
+                {% endwith %}
+            {% endfor %}
         </ul>
-        -->
+
       </div>
 
 
@@ -146,23 +135,23 @@
               </li>
             {% endfor %}
         </ul>
-      <div class="pagination">
-        <span class="step-links">
-            {% if non_governmental_organization.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ non_governmental_organization.previous_page_number }}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ non_governmental_organization.number }} of {{ non_governmental_organization.paginator.num_pages }}.
-            </span>
-
-            {% if non_governmental_organization.has_next %}
-                <a href="?page={{ non_governmental_organization.next_page_number }}">next</a>
-                <a href="?page={{ non_governmental_organization.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-        </span>
-      </div>
+{#      <div class="pagination">#}
+{#        <span class="step-links">#}
+{#            {% if non_governmental_organization.has_previous %}#}
+{#                <a href="?page=1">&laquo; first</a>#}
+{#                <a href="?page={{ non_governmental_organization.previous_page_number }}">previous</a>#}
+{#            {% endif %}#}
+{##}
+{#            <span class="current">#}
+{#                Page {{ non_governmental_organization.number }} of {{ non_governmental_organization.paginator.num_pages }}.#}
+{#            </span>#}
+{##}
+{#            {% if non_governmental_organization.has_next %}#}
+{#                <a href="?page={{ non_governmental_organization.next_page_number }}">next</a>#}
+{#                <a href="?page={{ non_governmental_organization.paginator.num_pages }}">last &raquo;</a>#}
+{#        {% endif %}#}
+{#        </span>#}
+{#      </div>#}
         <!-- Pagination
         <ul class="help--slides-pagination">
           <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
@@ -189,29 +178,34 @@
               </li>
             {% endfor %}
         </ul>
-      <div class="pagination">
-        <span class="step-links">
-            {% if local_collection.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ local_collection.previous_page_number }}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ local_collection.number }} of {{ local_collection.paginator.num_pages }}.
-            </span>
-
-            {% if local_collection.has_next %}
-                <a href="?page={{ local_collection.next_page_number }}">next</a>
-                <a href="?page={{ local_collection.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-        </span>
-      </div>
-        <!-- Pagination
+{#      <div class="pagination">#}
+{#        <span class="step-links">#}
+{#            {% if local_collection.has_previous %}#}
+{#                <a href="?page=1">&laquo; first</a>#}
+{#                <a href="?page={{ local_collection.previous_page_number }}">previous</a>#}
+{#            {% endif %}#}
+{##}
+{#            <span class="current">#}
+{#                Page {{ local_collection.number }} of {{ local_collection.paginator.num_pages }}.#}
+{#            </span>#}
+{##}
+{#            {% if local_collection.has_next %}#}
+{#                <a href="?page={{ local_collection.next_page_number }}">next</a>#}
+{#                <a href="?page={{ local_collection.paginator.num_pages }}">last &raquo;</a>#}
+{#        {% endif %}#}
+{#        </span>#}
+{#      </div>#}
+        Pagination
         <ul class="help--slides-pagination">
-          <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="2">2</a></li>
+            {% for collection in local_collection %}
+                {% if forloop.counter|divisibleby:5 %}
+                    {% with number=forloop.counter|intdiv:5 %}
+                        <li><a href="#" class="btn btn--small btn--without-border active" data-page="{{ number }}">{{ number }}</a></li>
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
         </ul>
-        -->
+
       </div>
     </section>
 

@@ -62,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
         changePage(e) {
             e.preventDefault();
             const page = e.target.dataset.page;
-
             console.log(page);
         }
     }
