@@ -26,4 +26,5 @@ urlpatterns = [
     path('register/', views.Register.as_view(), name='register'),
     path('logout/', views.Logout.as_view(), name='logout'),
     path('donated/', views.DonateConfirmation.as_view(), name='donate-complate'),
+    path('user_profile/', views.Profile.as_view(), name='user-profile'),
 ]

@@ -127,3 +127,8 @@ class Logout(View):
 class DonateConfirmation(View):
     def get(self, request):
         return render(request, "form-confirmation.html")
+
+
+class Profile(View):
+    def get(self, request):
+        return render(request, 'user_profile.html')

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    {{ user.first_name }} {{ user.last_name }}
+{% endblock %}
+{% block body %}
+    <header class="header--main-page">
+      <nav class="container container--70">
+        {% include 'login_header.html' %}
+        {% include 'headermenu.html' %}
+
+      </nav>
+
+      <div class="slogan container container--90">
+        <div class="slogan--item">
+            <h1>
+            Imię: {{ user.first_name }}<br>
+            Nazwisko: {{ user.last_name }}<br>
+            Email: {{ user.username }}<br>
+            </h1>
+        </div>
+      </div>
+    </header>
+
+{% endblock %}
