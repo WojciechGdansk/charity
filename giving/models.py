@@ -10,12 +10,17 @@ FUND_CHOICES = [
 class Category(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
 
 class Insitution(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     type = models.CharField(choices=FUND_CHOICES, default=1, max_length=255)
     categories = models.ManyToManyField(Category)
+
+    def __str__(self):
+        return self.name
 
 class Donation(models.Model):
     quantity = models.PositiveIntegerField()

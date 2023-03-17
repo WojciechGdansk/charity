@@ -1,12 +1,13 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.shortcuts import render, redirect, reverse
 from django.views import View
-from giving.models import Donation, Insitution
+from giving.models import Donation, Insitution, Category
 from django.db.models import Sum
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 class LandingPage(View):
@@ -34,10 +35,41 @@ class LandingPage(View):
         })
 
 
-class AddDonation(View):
+class AddDonation(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'form.html')
+        categories = Category.objects.all()
+        foundations = Insitution.objects.all()
+        return render(request, 'form.html', {"categories": categories,
+                                             "foundations": foundations})
 
+    def post(self, request):
+        categories = request.POST.getlist('categories')
+        quantity = request.POST.get('bags')
+        organization_name = request.POST.get('organization')
+        address = request.POST.get('address')
+        city = request.POST.get("city")
+        zip_code = request.POST.get("postcode")
+        phone_number = request.POST.get("phone")
+        pick_up_date = request.POST.get('data')
+        pick_up_time = request.POST.get('time')
+        pick_up_comment = request.POST.get("more_info")
+        user = request.user
+        try:
+            institution = Insitution.objects.get(name=organization_name)
+        except ObjectDoesNotExist:
+            return redirect(reverse('donate'))
+        donation = Donation.objects.create(quantity=quantity, institution=institution, address=address,
+                                           phone_number=phone_number, city=city, zip_code=zip_code,
+                                           pick_up_date=pick_up_date, pick_up_time=pick_up_time,
+                                           pick_up_comment=pick_up_comment, user=user)
+        for category in categories:
+            try:
+                cat = Category.objects.get(name=category)
+                donation.categories.add(cat)
+            except ObjectDoesNotExist:
+                continue
+
+        return redirect(reverse('donate-complate'))
 
 class Login(View):
     def get(self, request):
@@ -90,3 +122,8 @@ class Logout(View):
     def get(self, request):
         logout(request)
         return redirect(reverse('main'))
+
+
+class DonateConfirmation(View):
+    def get(self, request):
+        return render(request, "form-confirmation.html")
