@@ -161,3 +161,34 @@ class CollectedChangeView(LoginRequiredMixin, View):
             donation.is_taken = False
         donation.save()
         return JsonResponse({"status": "true"}, status=200)
+
+
+class EditUser(LoginRequiredMixin, View):
+    def get(self, request, id):
+        user_from_id = User.objects.get(id=id)
+        user = request.user
+        if user != user_from_id:
+            return redirect(reverse('main'))
+        return render(request, 'edit_user.html')
+
+    def post(self, request, id):
+        user_from_id = User.objects.get(id=id)
+        user = request.user
+        if user != user_from_id:
+            return redirect(reverse('main'))
+
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+        oldpassword = request.POST.get('oldpassword')
+
+        if password != password2:
+            error_msg = "Podane hasła nie są identyczne"
+            return render(request, "edit_user.html", {'error_msg': error_msg})
+
+        if user_from_id.check_password(oldpassword) is False:
+            error_msg = "Błędne hasło"
+            return render(request, "edit_user.html", {'error_msg': error_msg})
+
+        user_from_id.set_password(password)
+        user_from_id.save()
+        return redirect(reverse('main'))
