@@ -17,11 +17,13 @@ from giving.tokens import account_activation_token
 from django.core.mail import EmailMessage
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.contrib import messages
+
 
 def activate_email(user, request, to_email):
     mail_subject = "Activate your account"
     message = render_to_string('activate_account.html', {
-        "user": user.username,
+        "user": user.first_name,
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.id)),
         'token': account_activation_token.make_token(user),
@@ -29,6 +31,21 @@ def activate_email(user, request, to_email):
     })
     email = EmailMessage(mail_subject, message, to=[to_email])
     email.send()
+
+
+def recover_password(user, request, to_email):
+    mail_subject = "Password recovery"
+    message = render_to_string('recover_password.html', {
+        "user": user.first_name,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.id)),
+        'token': account_activation_token.make_token(user),
+        'protocol': 'https' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+
+
 # Create your views here.
 class LandingPage(View):
     def get(self, request):
@@ -99,12 +116,14 @@ class Login(View):
     def post(self, request):
         username = request.POST.get('email')
         password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(username=username, password=password)
         if user:
             login(request, user)
             return redirect(reverse('main'))
         else:
+            messages.error(request, "Błędne dane")
             return redirect(reverse('register'))
+
 
 # class Login(LoginView):
 #     template_name = 'login.html'
@@ -237,6 +256,7 @@ class EditUser(LoginRequiredMixin, View):
         user_from_id.save()
         return redirect(reverse('main'))
 
+
 class Activate(View):
     def get(self, request, uidb64, token):
         try:
@@ -249,3 +269,45 @@ class Activate(View):
             user.save()
             return redirect(reverse('login'))
         return redirect(reverse('main'))
+
+
+class PasswordRecovery(View):
+    def get(self, request):
+        return render(request, "password_recovery.html")
+
+    def post(self, request):
+        username = request.POST.get('email')
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            messages.error(request, "Nie ma takiego użytkownika")
+            return redirect(reverse('main'))
+        else:
+            recover_password(user, request, user.username)
+            messages.success(request, 'Sprawdź pocztę')
+            return redirect(reverse('main'))
+
+class Recover(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=uid)
+        except User.DoesNotExist:
+            user = None
+        if user is not None and account_activation_token.check_token(user, token):
+            return render(request, "set_new_password.html")
+    def post(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=uid)
+        except User.DoesNotExist:
+            user = None
+        if user is not None and account_activation_token.check_token(user, token):
+            password = request.POST.get('password')
+            password2 = request.POST.get('password2')
+            if password != password2:
+                error_msg = "Podane hasła nie są identyczne"
+                return render(request, "set_new_password.html", {'error_msg': error_msg})
+            user.set_password(password)
+            messages.success(request, "Zmieniono hasło")
+            return redirect(reverse('login'))

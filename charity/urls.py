@@ -31,4 +31,6 @@ urlpatterns = [
     path('change_if_collected/<int:id>', views.CollectedChangeView.as_view(), name='collected-change'),
     path('edit_password/<int:id>', views.EditUser.as_view(), name='edit-password'),
     path('activate/<uidb64>/<token>', views.Activate.as_view(), name='activate'),
+    path('recover_password/', views.PasswordRecovery.as_view(), name='recover'),
+    path('recover/<uidb64>/<token>', views.Recover.as_view(), name='recover-check'),
 ]

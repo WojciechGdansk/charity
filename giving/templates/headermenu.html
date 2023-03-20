@@ -6,3 +6,8 @@
   <li><a href="{% url 'donate' %}" class="btn btn--without-border">Przekaż dary</a></li>
   <li><a href="#contact" class="btn btn--without-border">Kontakt</a></li>
 </ul>
+{% if messages %}
+    {% for message in messages %}
+        {{ message }}
+    {% endfor %}
+{% endif %}
