@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     /**
      * HomePage - Help section
      */
+    showFirstFiveElements()
     class Help {
         constructor($el) {
             this.$el = $el;
@@ -56,13 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        /**
-         * TODO: callback to page change event
-         */
+
         changePage(e) {
             e.preventDefault();
             const page = e.target.dataset.page;
-            console.log(page);
+            pagination(page)
         }
     }
 
@@ -263,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
             }
-            // TODO: Validation
+            //
 
             this.slides.forEach(slide => {
                 slide.classList.remove("active");
@@ -276,14 +275,14 @@ document.addEventListener("DOMContentLoaded", function () {
             this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
             this.$step.parentElement.hidden = this.currentStep >= 6;
 
-            // TODO: get data from inputs and show them in summary
+
             summaryInfo()
         }
 
         /**
          * Submit form
          *
-         * TODO: validation, send data to server
+         *
          */
         submit(e) {
             e.preventDefault();
@@ -478,4 +477,26 @@ function changeCollectedInfo(donationId) {
                 location.reload()
             }
         })
+}
+
+function pagination(page) {
+    const allLiItems = document.querySelectorAll('.li-select')
+    const visibleItems = document.querySelectorAll(`.li-select[data-page="${page}"]`)
+    allLiItems.forEach((el)=>{
+        const isElInVisibleItems = Array.prototype.indexOf.call(visibleItems, el)
+        if (isElInVisibleItems !== -1) {
+            el.style.display = "flex"
+        }
+        else {
+            el.style.display = "none"
+        }
+    })
+
+}
+
+function showFirstFiveElements() {
+    const noFirstFiveElements = document.querySelectorAll('.li-select:not([data-page="1"])')
+    noFirstFiveElements.forEach((el)=>{
+        el.style.display = "none"
+    })
 }

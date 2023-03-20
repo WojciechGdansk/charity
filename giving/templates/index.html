@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load mathfilters %}
+{% load custom_filters %}
 {% block title %}Document{% endblock %}
 {% block body %}
 
@@ -92,7 +93,10 @@
 
         <ul class="help--slides-items">
             {% for foundation in foundations %}
-              <li>
+                {% with number=forloop.counter|div:5 %}
+                      <li data-page="{{ number|roundup }}" class="li-select">
+                {% endwith %}
+
                 <div class="col">
                   <div class="title">{{ foundation.name }}</div>
                   <div class="subtitle">{{ foundation.description }}</div>
@@ -125,7 +129,9 @@
         </p>
         <ul class="help--slides-items">
             {% for nongover in non_governmental_organization %}
-              <li>
+                {% with number=forloop.counter|div:5 %}
+                      <li data-page="{{ number|roundup }}" class="li-select">
+                {% endwith %}
                 <div class="col">
                   <div class="title">{{ nongover.name }}</div>
                   <div class="subtitle">{{ nongover.description }}</div>
@@ -152,15 +158,20 @@
 {#        {% endif %}#}
 {#        </span>#}
 {#      </div>#}
-        <!-- Pagination
+
+
         <ul class="help--slides-pagination">
-          <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="2">2</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="3">3</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="4">4</a></li>
-          <li><a href="#" class="btn btn--small btn--without-border" data-page="5">5</a></li>
+            {% for nongover in non_governmental_organization %}
+                {% with howmany=forloop.counter|sub:1 %}
+                    {% if howmany|divisibleby:5 %}
+                        {% with number=forloop.counter|intdiv:5 %}
+                            <li><a href="#" class="btn btn--small btn--without-border active" data-page="{{ number|add:1 }}">{{ number|add:1 }}</a></li>
+                        {% endwith %}
+                    {% endif %}
+                {% endwith %}
+            {% endfor %}
         </ul>
-        -->
+
       </div>
 
       <!-- SLIDE 3 -->
@@ -168,7 +179,9 @@
         <p>Poniżej lokalne zbiórki wraz z opisem najbardziej potrzebujących rzeczy</p>
         <ul class="help--slides-items">
             {% for collection in local_collection %}
-              <li>
+                {% with number=forloop.counter|div:5 %}
+                      <li data-page="{{ number|roundup }}" class="li-select">
+                {% endwith %}
                 <div class="col">
                   <div class="title">{{ collection.name }}</div>
                   <div class="subtitle">{{ collection.description }}</div>
@@ -178,31 +191,16 @@
               </li>
             {% endfor %}
         </ul>
-{#      <div class="pagination">#}
-{#        <span class="step-links">#}
-{#            {% if local_collection.has_previous %}#}
-{#                <a href="?page=1">&laquo; first</a>#}
-{#                <a href="?page={{ local_collection.previous_page_number }}">previous</a>#}
-{#            {% endif %}#}
-{##}
-{#            <span class="current">#}
-{#                Page {{ local_collection.number }} of {{ local_collection.paginator.num_pages }}.#}
-{#            </span>#}
-{##}
-{#            {% if local_collection.has_next %}#}
-{#                <a href="?page={{ local_collection.next_page_number }}">next</a>#}
-{#                <a href="?page={{ local_collection.paginator.num_pages }}">last &raquo;</a>#}
-{#        {% endif %}#}
-{#        </span>#}
-{#      </div>#}
-        Pagination
+
         <ul class="help--slides-pagination">
             {% for collection in local_collection %}
-                {% if forloop.counter|divisibleby:5 %}
-                    {% with number=forloop.counter|intdiv:5 %}
-                        <li><a href="#" class="btn btn--small btn--without-border active" data-page="{{ number }}">{{ number }}</a></li>
-                    {% endwith %}
-                {% endif %}
+                {% with howmany=forloop.counter|sub:1 %}
+                    {% if howmany|divisibleby:5 %}
+                        {% with number=forloop.counter|intdiv:5 %}
+                        <li><a href="#" class="btn btn--small btn--without-border active" data-page="{{ number|add:1 }}">{{ number|add:1 }}</a></li>
+                        {% endwith %}
+                    {% endif %}
+                {% endwith %}
             {% endfor %}
         </ul>
 

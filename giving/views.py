@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.shortcuts import render, redirect, reverse
+from django.urls import reverse_lazy
 from django.views import View
 from giving.models import Donation, Insitution, Category
 from django.db.models import Sum
@@ -9,7 +10,7 @@ from django.core.validators import validate_email
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-
+from django.contrib.auth.views import LoginView
 
 # Create your views here.
 class LandingPage(View):
@@ -81,12 +82,36 @@ class Login(View):
     def post(self, request):
         username = request.POST.get('email')
         password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
             return redirect(reverse('main'))
         else:
             return redirect(reverse('register'))
+
+# class Login(LoginView):
+#     template_name = 'login.html'
+#     print("dupa")
+#
+#     # redirect_authenticated_user = True
+#
+#     # def get_success_url(self):
+#     #     if 'next' in self.request.GET:
+#     #         return self.request.GET['next']
+#     #     else:
+#     #         return reverse_lazy('main')
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'login.html')
+#
+#     def post(self, request, *args, **kwargs):
+#         username = request.POST.get('email')
+#         password = request.POST.get('password')
+#         user = authenticate(username=username, password=password)
+#         if user:
+#             login(request, user)
+#             return redirect(reverse('main'))
+#         else:
+#             return redirect(reverse('register'))
 
 
 class Register(View):
