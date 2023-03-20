@@ -189,6 +189,7 @@ class Register(View):
             is_active=False
         )
         activate_email(user, request, user.username)
+        messages.success(request, "Sprawdź pocztę")
         return redirect(reverse("login"))
 
 
@@ -258,6 +259,12 @@ class EditUser(LoginRequiredMixin, View):
             error_msg = "Błędne hasło"
             return render(request, "edit_user.html", {'error_msg': error_msg})
 
+        try:
+            password_validation.validate_password(password)
+        except ValidationError as e:
+            error_msg = str(e.messages)
+            return render(request, "edit_user.html", {'error_msg': error_msg})
+
         user_from_id.set_password(password)
         user_from_id.save()
         return redirect(reverse('main'))
@@ -313,6 +320,11 @@ class Recover(View):
             password2 = request.POST.get('password2')
             if password != password2:
                 error_msg = "Podane hasła nie są identyczne"
+                return render(request, "set_new_password.html", {'error_msg': error_msg})
+            try:
+                password_validation.validate_password(password)
+            except ValidationError as e:
+                error_msg = str(e.messages)
                 return render(request, "set_new_password.html", {'error_msg': error_msg})
             user.set_password(password)
             messages.success(request, "Zmieniono hasło")

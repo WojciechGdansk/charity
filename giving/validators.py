@@ -34,8 +34,7 @@ class LowercaseValidator(object):
 class SymbolValidator(object):
     def validate(self, password, user=None):
         if not re.findall('[()[\]{}|\\`~!@#$%^&*_\-+=;:\'",<>./?]', password):
-            raise ValidationError(_("Hasło musi zawierać: " +
-                                  "()[]{}|\`~!@#$%^&*_-+=;:'\",<>./?"))
+            raise ValidationError(_("Hasło musi zawierać znak specjalny"))
 
     def get_help_text(self):
-        return _("Hasło musi zawierać:" + "()[]{}|\`~!@#$%^&*_-+=;:'\",<>./?")
+        return _("Hasło musi zawierać znak specjalny")
