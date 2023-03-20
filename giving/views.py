@@ -46,6 +46,14 @@ def recover_password(user, request, to_email):
     email.send()
 
 
+def send_mail_to_administrators(from_, message_text, request):
+    mail_subject = f"Message from {from_}"
+    message = message_text
+    administrators = User.objects.filter(is_superuser=True)
+    administrators = [administrator.username for administrator in administrators]
+    email = EmailMessage(mail_subject, message, to=administrators)
+    email.send()
+
 # Create your views here.
 class LandingPage(View):
     def get(self, request):
@@ -54,15 +62,8 @@ class LandingPage(View):
         for institution in all_donations:
             supported_institution.add(institution.institution.name)
         foundations = Insitution.objects.filter(type=1).order_by('id')
-        paginator_foundations = Paginator(foundations, 5)
-        page = request.GET.get('page')
-        # foundations = paginator_foundations.get_page(page)
         non_governmental_organization = Insitution.objects.filter(type=2).order_by('id')
-        paginator_nongover = Paginator(non_governmental_organization, 5)
-        # non_governmental_organization = paginator_nongover.get_page(page)
         local_collection = Insitution.objects.filter(type=3).order_by('id')
-        paginator_local_collections = Paginator(local_collection, 5)
-        # local_collection = paginator_local_collections.get_page(page)
         return render(request, 'index.html', context={
             "bags": Donation.objects.aggregate(Sum('quantity'))['quantity__sum'],
             'supported_institutions': len(supported_institution),
@@ -311,3 +312,14 @@ class Recover(View):
             user.set_password(password)
             messages.success(request, "Zmieniono hasło")
             return redirect(reverse('login'))
+
+
+class MessageFromContactForm(View):
+    def get(self, request):
+        first_name = request.GET.get('name')
+        last_name = request.GET.get('surname')
+        text_message = request.GET.get('message')
+        from_ = first_name + " " + last_name
+        send_mail_to_administrators(from_, text_message, request)
+        messages.success(request, "Wiadomość wysłana")
+        return redirect(reverse('main'))

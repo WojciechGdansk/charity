@@ -33,4 +33,5 @@ urlpatterns = [
     path('activate/<uidb64>/<token>', views.Activate.as_view(), name='activate'),
     path('recover_password/', views.PasswordRecovery.as_view(), name='recover'),
     path('recover/<uidb64>/<token>', views.Recover.as_view(), name='recover-check'),
+    path('sendmessage/', views.MessageFromContactForm.as_view(), name='message-contact')
 ]
