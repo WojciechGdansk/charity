@@ -141,24 +141,6 @@
               </li>
             {% endfor %}
         </ul>
-{#      <div class="pagination">#}
-{#        <span class="step-links">#}
-{#            {% if non_governmental_organization.has_previous %}#}
-{#                <a href="?page=1">&laquo; first</a>#}
-{#                <a href="?page={{ non_governmental_organization.previous_page_number }}">previous</a>#}
-{#            {% endif %}#}
-{##}
-{#            <span class="current">#}
-{#                Page {{ non_governmental_organization.number }} of {{ non_governmental_organization.paginator.num_pages }}.#}
-{#            </span>#}
-{##}
-{#            {% if non_governmental_organization.has_next %}#}
-{#                <a href="?page={{ non_governmental_organization.next_page_number }}">next</a>#}
-{#                <a href="?page={{ non_governmental_organization.paginator.num_pages }}">last &raquo;</a>#}
-{#        {% endif %}#}
-{#        </span>#}
-{#      </div>#}
-
 
         <ul class="help--slides-pagination">
             {% for nongover in non_governmental_organization %}
