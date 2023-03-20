@@ -40,3 +40,13 @@ def test_donate_post_view(client, logged_user):
     url = reverse('donate')
     response = client.post(url, {"dupa": "kupa"})
     print(response)
+
+@pytest.mark.django_db
+def test_email(client):
+    url = reverse('register')
+    response = client.post(url, {"name": "imie",
+                                 "surname": "nazwisko",
+                                 "email": 'wojtekteam@op.pl',
+                                 'password': 123,
+                                 'password2': 123})
+    assert response.status_code == 302

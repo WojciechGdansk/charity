@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.shortcuts import render, redirect, reverse
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import View
 from giving.models import Donation, Insitution, Category
@@ -11,7 +12,23 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.contrib.auth.views import LoginView
+from django.contrib.sites.shortcuts import get_current_site
+from giving.tokens import account_activation_token
+from django.core.mail import EmailMessage
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 
+def activate_email(user, request, to_email):
+    mail_subject = "Activate your account"
+    message = render_to_string('activate_account.html', {
+        "user": user.username,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.id)),
+        'token': account_activation_token.make_token(user),
+        'protocol': 'https' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
 # Create your views here.
 class LandingPage(View):
     def get(self, request):
@@ -139,12 +156,14 @@ class Register(View):
         if error_msg:
             return render(request, "register.html", {'error_msg': error_msg})
 
-        User.objects.create_user(
+        user = User.objects.create_user(
             first_name=first_name,
             last_name=last_name,
             username=username,
-            password=password
+            password=password,
+            is_active=False
         )
+        activate_email(user, request, user.username)
         return redirect(reverse("login"))
 
 
@@ -216,4 +235,17 @@ class EditUser(LoginRequiredMixin, View):
 
         user_from_id.set_password(password)
         user_from_id.save()
+        return redirect(reverse('main'))
+
+class Activate(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=uid)
+        except:
+            user = None
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return redirect(reverse('login'))
         return redirect(reverse('main'))
