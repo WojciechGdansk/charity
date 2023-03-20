@@ -2,7 +2,7 @@ from django.test import TestCase
 import pytest
 from django.test import Client
 from django.shortcuts import reverse
-from giving.models import User, Category, Insitution, Donation
+from giving.models import User, Category, Institution, Donation
 from django.contrib.messages import get_messages
 
 
@@ -120,7 +120,7 @@ def test_add_donation(client, logged_user):
     assert response['location'] == reverse('donate')
     assert Donation.objects.count() == 0
     cat = Category.objects.create(name="test")
-    int_ = Insitution.objects.create(name='test', description='test', type=1)
+    int_ = Institution.objects.create(name='test', description='test', type=1)
     int_.categories.add(cat)
     response = client.post(url, {
         "categories": ['test', 'meble'],

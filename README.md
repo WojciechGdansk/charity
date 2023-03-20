@@ -10,5 +10,7 @@ pickup date can't be from past) and saves donation to database.
 
 Install packages from requirements.txt -> pip install -r requirements.txt
 
+Setup env file(database, postmaster)
+
 Write python manage.py loaddata ./fixtures/db.json in 
-terminal to populate database with necessary details(such as Categories or Foundations)
+terminal to populate database with necessary details(such as Foundations types)

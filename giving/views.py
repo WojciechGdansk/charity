@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, reverse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import View
-from giving.models import Donation, Insitution, Category
+from giving.models import Donation, Institution, Category
 from django.db.models import Sum
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
@@ -61,9 +61,9 @@ class LandingPage(View):
         all_donations = Donation.objects.all()
         for institution in all_donations:
             supported_institution.add(institution.institution.name)
-        foundations = Insitution.objects.filter(type=1).order_by('id')
-        non_governmental_organization = Insitution.objects.filter(type=2).order_by('id')
-        local_collection = Insitution.objects.filter(type=3).order_by('id')
+        foundations = Institution.objects.filter(type=1).order_by('id')
+        non_governmental_organization = Institution.objects.filter(type=2).order_by('id')
+        local_collection = Institution.objects.filter(type=3).order_by('id')
         return render(request, 'index.html', context={
             "bags": Donation.objects.aggregate(Sum('quantity'))['quantity__sum'],
             'supported_institutions': len(supported_institution),
@@ -76,7 +76,7 @@ class LandingPage(View):
 class AddDonation(LoginRequiredMixin, View):
     def get(self, request):
         categories = Category.objects.all()
-        foundations = Insitution.objects.all()
+        foundations = Institution.objects.all()
         return render(request, 'form.html', {"categories": categories,
                                              "foundations": foundations})
 
@@ -93,7 +93,7 @@ class AddDonation(LoginRequiredMixin, View):
         pick_up_comment = request.POST.get("more_info")
         user = request.user
         try:
-            institution = Insitution.objects.get(name=organization_name)
+            institution = Institution.objects.get(name=organization_name)
         except ObjectDoesNotExist:
             return redirect(reverse('donate'))
         donation = Donation.objects.create(quantity=quantity, institution=institution, address=address,

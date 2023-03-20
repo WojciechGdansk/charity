@@ -1,0 +1,23 @@
+[
+  {
+    "model": "giving.fundchoices",
+    "pk": 1,
+    "fields": {
+      "name": "fundacja"
+    }
+  },
+  {
+    "model": "giving.fundchoices",
+    "pk": 2,
+    "fields": {
+      "name": "organizacja pozarządowa"
+    }
+  },
+  {
+    "model": "giving.fundchoices",
+    "pk": 3,
+    "fields": {
+      "name": "zbiórka lokalna"
+    }
+  }
+]

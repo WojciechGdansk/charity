@@ -1,11 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 # Create your models here.
-FUND_CHOICES = [
-    (1, "fundacja"),
-    (2, "organizacja pozarządowa"),
-    (3, "zbiórka lokalna")
-]
+class FundChoices(models.Model):
+    name = models.CharField(max_length=100)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
@@ -13,19 +12,21 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-class Insitution(models.Model):
+
+class Institution(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    type = models.CharField(choices=FUND_CHOICES, default=1, max_length=255)
+    type = models.ForeignKey(FundChoices, on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category)
 
     def __str__(self):
         return self.name
 
+
 class Donation(models.Model):
     quantity = models.PositiveIntegerField()
     categories = models.ManyToManyField(Category)
-    institution = models.ForeignKey(Insitution, on_delete=models.CASCADE)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
     phone_number = models.IntegerField()
     city = models.CharField(max_length=255)
