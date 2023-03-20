@@ -8,7 +8,7 @@ from django.db.models import Sum
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, password_validation
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.contrib.auth.views import LoginView
@@ -172,6 +172,11 @@ class Register(View):
             validate_email(username)
         except ValidationError:
             error_msg += "Niepoprawny adres email"
+
+        try:
+            password_validation.validate_password(password)
+        except ValidationError as e:
+            error_msg += str(e.messages)
 
         if error_msg:
             return render(request, "register.html", {'error_msg': error_msg})
