@@ -64,8 +64,11 @@ class LandingPage(View):
         foundations = Institution.objects.filter(type=1).order_by('id')
         non_governmental_organization = Institution.objects.filter(type=2).order_by('id')
         local_collection = Institution.objects.filter(type=3).order_by('id')
+        bags = Donation.objects.aggregate(Sum('quantity'))['quantity__sum']
+        if not bags:
+            bags = 0
         return render(request, 'index.html', context={
-            "bags": Donation.objects.aggregate(Sum('quantity'))['quantity__sum'],
+            "bags": bags,
             'supported_institutions': len(supported_institution),
             "foundations": foundations,
             "non_governmental_organization": non_governmental_organization,
